@@ -1,40 +1,81 @@
-def load_random_key(filename, length):
-    with open(filename, 'r') as f:
-        key = f.read().strip()
-    
-    if len(key) < length:
-        raise ValueError("Random key file does not contain enough characters.")
-    
-    return key[:length]
 
-def otp_encrypt(plaintext, key):
+def load_random_key(filename, length):
+    with open(filename, 'r+') as f:
+        key = f.read().strip()
+        
+        if len(key) < length:
+            raise ValueError("file have not enough characters.")
+        
+        key_to_return = key[:length]
+        remaining_key = key[length:]
+
+        f.seek(0)
+        f.truncate()
+        f.write(remaining_key)
+    
+    return key_to_return
+
+
+def otp_encrypt(plaintext):
+    key = load_random_key("i1.txt", len(plaintext))
     ciphertext = ''
     for p, k in zip(plaintext, key):
-        p_val = ord(p) - ord('A')
-        k_val = ord(k) - ord('A')
+        p_val = ord(p) - 64
+        k_val = ord(k) - 64
         c_val = (p_val + k_val) % 26
-        ciphertext += chr(c_val + ord('A'))
-    return ciphertext
+        print(f"p = {p_val}, k = {k_val}, c = {c_val}")
+        ciphertext += chr(c_val + 64)
+    return key, ciphertext
 
-def otp_decrypt(ciphertext, key):
+# def otp_encrypt(plaintext):
+#     key = load_random_key("i1.txt", len(plaintext))
+#     ciphertext = ''
+#     for p, k in zip(plaintext, key):
+#         p_val = ord(p) - ord('A') + 1   # A = 1
+#         k_val = ord(k) - ord('A') + 1   # A = 1
+#         c_val = (p_val + k_val - 1) % 26
+#         if c_val == 0:
+#             c_val = 26
+#         ciphertext += chr(c_val - 1 + ord('A'))  # Convert back to letter
+#     return key, ciphertext
+
+
+
+def otp_decrypt(ciphertext):
+    key = load_random_key("i2.txt", len(ciphertext))
     plaintext = ''
     for c, k in zip(ciphertext, key):
-        c_val = ord(c) - ord('A')
-        k_val = ord(k) - ord('A')
+        c_val = ord(c) - 64
+        k_val = ord(k) - 64
         p_val = (c_val - k_val + 26) % 26
-        plaintext += chr(p_val + ord('A'))
-    return plaintext
+        print(f"p = {p_val}, k = {k_val}, c = {c_val}")
+        plaintext += chr(p_val + 64)
+    return key, plaintext
 
-# === Example Usage ===
+# def otp_decrypt(ciphertext):
+#     key = load_random_key("i2.txt", len(ciphertext))
+#     plaintext = ''
+#     for c, k in zip(ciphertext, key):
+#         c_val = ord(c) - ord('A') + 1
+#         k_val = ord(k) - ord('A') + 1
+#         p_val = (c_val - k_val + 26) % 26
+#         if p_val == 0:
+#             p_val = 26
+#         plaintext += chr(p_val - 1 + ord('A'))
+#     return key, plaintext
+
+
+
 if __name__ == "__main__":
-    plaintext = "UNIVERSITY OF RAJSHAHI"  # must be uppercase A–Z only
-    key = load_random_key("random_key.txt", len(plaintext))
+    plaintext = "ABC"
 
-    print("Plaintext: ", plaintext)
-    print("Key Used:  ", key)
+    print("\nPlaintext: ", plaintext)
 
-    cipher = otp_encrypt(plaintext, key)
-    print("Ciphertext:", cipher)
+    key1, cipher = otp_encrypt(plaintext)
+    print("\n\nCiphertext:", cipher)
+    print("Key Used:  ", key1)
 
-    recovered = otp_decrypt(cipher, key)
-    print("Recovered: ", recovered)
+    key2, recovered_plain_text = otp_decrypt(cipher)
+
+    print("\n\nRecovered: ", recovered_plain_text)
+    print("Key Used:  ", key2)
