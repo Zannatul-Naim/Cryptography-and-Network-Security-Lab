@@ -17,3 +17,8 @@ print(f"Encrypted: {encrypted}")
 
 decrypted = caesar(encrypted, -3)
 print(f"Decrypted: {decrypted}")
+
+# output:
+# Original:  UNIVERSITY OF RAJSHAHI
+# Encrypted: XQLYHUVLWB RI UDMVKDKL
+# Decrypted: UNIVERSITY OF RAJSHAHI
