@@ -3,12 +3,12 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import os, base64
 
-# ---------- Key generation ----------
+# Key generation
 def generate_rsa_keys():
     private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
     return private_key, private_key.public_key()
 
-# ---------- Signing ----------
+# Signing 
 def sign(message_bytes, priv):
     return priv.sign(message_bytes, asym_padding.PSS(
         mgf=asym_padding.MGF1(hashes.SHA256()), salt_length=asym_padding.PSS.MAX_LENGTH
@@ -23,7 +23,7 @@ def verify(message_bytes, signature, pub):
     except:
         return False
 
-# ---------- Hybrid encryption ----------
+#  Hybrid encryption
 def encrypt(message_bytes, recipient_pub):
     aes_key = AESGCM.generate_key(bit_length=256)
     aesgcm = AESGCM(aes_key)
